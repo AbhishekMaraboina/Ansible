@@ -21,7 +21,7 @@ CANCEL_INSTANCE() {
 
   aws ec2 describe-spot-instance-requests --filters "Name=tag:Name,Values=${COMPONENT}" | jq .SpotInstanceRequests[].State | sed 's/"//g' | grep -E 'active'
   if [ $? -eq -0 ]; then
-    aws ec2 cancel-spot-instance-requests --spot-instance-request-ids SPOTINSTID
+    aws ec2 cancel-spot-instance-requests --spot-instance-request-ids "SPOTINSTID"
   else
     echo -e "\e[1;33mInstance is already cancelled\e[0m"
   fi
