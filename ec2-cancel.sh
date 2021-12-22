@@ -17,7 +17,7 @@ fi
 CANCEL_INSTANCE() {
   ## Check if instance is already there
 
-  SPOTINSTID=$(aws ec2 describe-spot-instance-requests --filters "Name=tag:Name,Values=${COMPONENT}" | jq .SpotInstanceRequests[].SpotInstanceRequestId | sed 's/"//g' | grep -v null)
+  SPOTINSTID=$(aws ec2 describe-spot-instance-requests --filters "Name=tag:Name,Values=${COMPONENT}" | jq .SpotInstanceRequests[].SpotInstanceRequestId)
 
   aws ec2 describe-spot-instance-requests --filters "Name=tag:Name,Values=${COMPONENT}" | jq .SpotInstanceRequests[].State | sed 's/"//g' | grep -E 'active'
   if [ $? -eq -0 ]; then
