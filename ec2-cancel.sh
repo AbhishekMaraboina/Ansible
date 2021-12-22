@@ -17,12 +17,12 @@ fi
 CANCEL_INSTANCE() {
   ## Check if instance is already there
 
-  SPOTINSTANCEID=$(aws ec2 describe-spot-instance-requests --filters "Name=tag:Name,Values=${COMPONENT}" | jq .SpotInstanceRequests[].SpotInstanceRequestId | sed 's/"//g' | grep -v null)
+  SPOTINSTID=$(aws ec2 describe-spot-instance-requests --filters "Name=tag:Name,Values=${COMPONENT}" | jq .SpotInstanceRequests[].SpotInstanceRequestId | sed 's/"//g' | grep -v null)
 
   aws ec2 describe-spot-instance-requests --filters "Name=tag:Name,Values=${COMPONENT}" | jq .SpotInstanceRequests[].State | sed 's/"//g' | grep -E 'active'
-   echo $(SPOTINSTANCEID)
+   echo $(SPOTINSTID)
   if [ $? -eq -0 ]; then
-    aws ec2 cancel-spot-instance-requests --spot-instance-request-ids $(SPOTINSTANCEID)
+    aws ec2 cancel-spot-instance-requests --spot-instance-request-ids $(SPOTINSTID)
   else
     echo -e "\e[1;33mInstance is already cancelled\e[0m"
   fi
