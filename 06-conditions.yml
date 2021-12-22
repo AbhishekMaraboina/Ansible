@@ -1,0 +1,41 @@
+- name: Demo on conditions
+  hosts: localhost
+  vars:
+    abc: ABC
+    val: 50
+    apply: true
+  tasks:
+    - name: Condition with String
+      debug:
+        msg: "abc var = ABC"
+      when: abc == "ABC"
+    - name: Condition with String
+      debug:
+        msg: "abc var = abc"
+      when: abc == "abc"
+
+    - name: Condition with Number
+      debug:
+        msg: "Val var is less than 100"
+      when: val | int  < 100
+
+    - name: Condition with Number
+      debug:
+        msg: "Val var is greater than or equal to 100"
+      when: val | int  >= 100
+
+    - name: Run on boolean
+      debug:
+        msg: "Applying"
+      when: apply | bool
+      # apply - will run if apply is true
+      # not apply - will run if apply is false
+
+## Multiple conditions are possible , and - both condtions are true, or - any condtions is true
+
+    - name: Multi Condition
+      debug:
+        msg: Val of abc = ABC and Val of val is 50
+      when: abc == "ABC" and val == 50
+
+
