@@ -18,7 +18,7 @@ ZONE_ID=Z025090326LF7AZJH4M51
 
 CANCEL_INSTANCE() {
   ## Check if instance is already Cancelled
-
+  IPADDRESS=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${COMPONENT}" | jq .Reservations[].Instances[].PrivateIpAddress | sed 's/"//g' | grep -v null)
   INSTID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${COMPONENT}" | jq .Reservations[].Instances[].InstanceId | sed 's/"//g' | grep -v null)
   #echo -e "${INSTID}"
   aws ec2 describe-instances --filters "Name=tag:Name,Values=${COMPONENT}" | jq .Reservations[].Instances[].State.Name | sed 's/"//g' | grep -E 'running|stopped'
@@ -36,9 +36,6 @@ CANCEL_INSTANCE() {
   else
     echo -e "\e[1;33mInstance is already cancelled\e[0m"
   fi
-
-  sleep 10
-  IPADDRESS=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${COMPONENT}" | jq .Reservations[].Instances[].PrivateIpAddress | sed 's/"//g' | grep -v null)
 
   # Update the DNS record
   sed -e "s/IPADDRESS/${IPADDRESS}/" -e "s/COMPONENT/${COMPONENT}/" recordD.json >/tmp/recordD.json
