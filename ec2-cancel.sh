@@ -14,6 +14,9 @@ if [ ! -z "$ENV" ]; then
   ENV="-${ENV}"
 fi
 
+
+ZONE_ID=Z025090326LF7AZJH4M51
+
 CANCEL_INSTANCE() {
   ## Check if instance is already Cancelled
 
@@ -21,13 +24,18 @@ CANCEL_INSTANCE() {
   INSTID=$(aws ec2 describe-spot-instance-requests --filters "Name=tag:Name,Values=${COMPONENT}" | jq .SpotInstanceRequests[].InstancetId | sed 's/"//g' | grep -v null)
   aws ec2 describe-spot-instance-requests --filters "Name=tag:Name,Values=${COMPONENT}" | jq .SpotInstanceRequests[].State | sed 's/"//g' | grep -E 'active'
   if [ $? -eq -0 ]; then
-    aws ec2 cancel-spot-instance-requests --spot-instance-request-ids ${SPOTINSTID}
     aws ec2 terminate-instances --instance-ids ${INSTID}
+    aws ec2 cancel-spot-instance-requests --spot-instance-request-ids ${SPOTINSTID}
   else
     echo -e "\e[1;33mInstance is already cancelled\e[0m"
   fi
 
   sleep 10
+  IPADDRESS=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${COMPONENT}" | jq .Reservations[].Instances[].PrivateIpAddress | sed 's/"//g' | grep -v null)
+
+  # Update the DNS record
+  sed -e "s/IPADDRESS/${IPADDRESS}/" -e "s/COMPONENT/${COMPONENT}/" record.json >/tmp/record.json
+  aws route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch file:///tmp/recordD.json | jq
 }
 
 if [ "$COMPONENT" == "all" ]; then
