@@ -14,7 +14,6 @@ if [ ! -z "$ENV" ]; then
   ENV="-${ENV}"
 fi
 
-
 ZONE_ID=Z025090326LF7AZJH4M51
 
 CANCEL_INSTANCE() {
@@ -34,7 +33,7 @@ CANCEL_INSTANCE() {
   IPADDRESS=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${COMPONENT}" | jq .Reservations[].Instances[].PrivateIpAddress | sed 's/"//g' | grep -v null)
 
   # Update the DNS record
-  sed -e "s/IPADDRESS/${IPADDRESS}/" -e "s/COMPONENT/${COMPONENT}/" record.json >/tmp/record.json
+  sed -e "s/IPADDRESS/${IPADDRESS}/" -e "s/COMPONENT/${COMPONENT}/" record.json >/tmp/recordD.json
   aws route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch file:///tmp/recordD.json | jq
 }
 
