@@ -21,11 +21,11 @@ CANCEL_INSTANCE() {
 
   INSTID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${COMPONENT}" | jq .Reservations[].Instances[].InstanceId | sed 's/"//g' | grep -v null)
   #echo -e "${INSTID}"
-  aws ec2 describe-instances --filters "Name=tag:Name,Values=${COMPONENT}" | jq .Reservations[].Instances[].State.Name | sed 's/"//g' | grep E 'running|stopped'
-  if [ $? -eq 0 ]; then
-    aws ec2 terminate-instances --instance-ids ${INSTID}
+  aws ec2 describe-instances --filters "Name=tag:Name,Values=${COMPONENT}" | jq .Reservations[].Instances[].State.Name | sed 's/"//g' | grep -E 'running|stopped'
+  if [ $? -eq -0 ]; then
+     aws ec2 terminate-instances --instance-ids ${INSTID}
   else
-    echo -e "\e[1;33mInstance is already cancelled\e[0m"
+   echo -e "\e[1;33mInstance is already cancelled\e[0m"
   fi
 
   SPOTINSTID=$(aws ec2 describe-spot-instance-requests --filters "Name=tag:Name,Values=${COMPONENT}" | jq .SpotInstanceRequests[].SpotInstanceRequestId | sed 's/"//g' | grep -v null)
