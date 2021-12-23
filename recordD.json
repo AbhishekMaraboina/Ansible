@@ -4,6 +4,8 @@
     "Action": "DELETE",
     "ResourceRecordSet": {
       "Name": "COMPONENT.devops.internal",
-      "Type": "A"
+      "Type": "A",
+      "TTL": 300,
+      "ResourceRecords": [{ "Value": "IPADDRESS"}]
     }}]
 }
